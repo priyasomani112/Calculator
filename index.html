@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enhanced Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background: #1f1f1f;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+      width: 300px;
+    }
+
+    .display {
+      background: #000;
+      color: #00ff99;
+      font-size: 2.2rem;
+      padding: 20px;
+      text-align: right;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      height: 60px;
+      overflow-x: auto;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    button {
+      font-size: 1.4rem;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #555;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button.operator {
+      background: #ff9500;
+    }
+
+    button.clear {
+      background: #e53935;
+    }
+
+    button.equal {
+      background: #43a047;
+    }
+
+    button.function {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button class="function" onclick="appendOperator('(')">(</button>
+      <button class="function" onclick="appendOperator(')')">)</button>
+      <button class="operator" onclick="appendOperator('/')">÷</button>
+
+      <button onclick="appendNumber('7')">7</button>
+      <button onclick="appendNumber('8')">8</button>
+      <button onclick="appendNumber('9')">9</button>
+      <button class="operator" onclick="appendOperator('*')">×</button>
+
+      <button onclick="appendNumber('4')">4</button>
+      <button onclick="appendNumber('5')">5</button>
+      <button onclick="appendNumber('6')">6</button>
+      <button class="operator" onclick="appendOperator('-')">−</button>
+
+      <button onclick="appendNumber('1')">1</button>
+      <button onclick="appendNumber('2')">2</button>
+      <button onclick="appendNumber('3')">3</button>
+      <button class="operator" onclick="appendOperator('+')">+</button>
+
+      <button onclick="appendNumber('0')">0</button>
+      <button onclick="appendDot()">.</button>
+      <button class="equal" onclick="calculate()">=</button>
+      <button class="function" onclick="deleteLast()">⌫</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+
+    function updateDisplay(value) {
+      if (display.textContent === '0' || display.textContent === 'Error') {
+        display.textContent = value;
+      } else {
+        display.textContent += value;
+      }
+    }
+
+    function appendNumber(num) {
+      updateDisplay(num);
+    }
+
+    function appendOperator(op) {
+      const lastChar = display.textContent.slice(-1);
+      if ("+-*/".includes(lastChar)) return;
+      updateDisplay(op);
+    }
+
+    function appendDot() {
+      const parts = display.textContent.split(/[\+\-\*\/]/);
+      if (!parts[parts.length - 1].includes('.')) {
+        updateDisplay('.');
+      }
+    }
+
+    function clearDisplay() {
+      display.textContent = '0';
+    }
+
+    function deleteLast() {
+      display.textContent = display.textContent.length > 1 
+        ? display.textContent.slice(0, -1) 
+        : '0';
+    }
+
+    function calculate() {
+      try {
+        const result = eval(display.textContent);
+        display.textContent = result;
+      } catch {
+        display.textContent = 'Error';
+      }
+    }
+
+    // Keyboard Support
+    document.addEventListener('keydown', (e) => {
+      const key = e.key;
+      if (!isNaN(key)) appendNumber(key);
+      else if ("+-*/()".includes(key)) appendOperator(key);
+      else if (key === ".") appendDot();
+      else if (key === "Enter") {
+        e.preventDefault();
+        calculate();
+      }
+      else if (key === "Backspace") deleteLast();
+      else if (key === "Escape") clearDisplay();
+    });
+  </script>
+</body>
+</html>
